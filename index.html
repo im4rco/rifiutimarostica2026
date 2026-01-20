@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Rifiuti">
+    <title>Rifiuti Marostica - ZONA A</title>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♻️</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg: #fafafa;
+            --card-bg: #ffffff;
+            --text: #1a1a1a;
+            --text-secondary: #666;
+            --border: #e5e5e5;
+            --umido: #8B5A2B;
+            --secco: #4a4a4a;
+            --carta: #2563eb;
+            --plastica: #eab308;
+            --vetro: #16a34a;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            padding-top: env(safe-area-inset-top, 20px);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            height: 50px;
+            margin-bottom: 12px;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .today-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .today-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .today-date {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .today-label {
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .waste-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .waste-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: #f8f8f8;
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+        
+        .waste-item:active {
+            transform: scale(0.98);
+        }
+        
+        .waste-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .waste-dot.umido { background: var(--umido); }
+        .waste-dot.secco { background: var(--secco); }
+        .waste-dot.carta { background: var(--carta); }
+        .waste-dot.plastica { background: var(--plastica); }
+        .waste-dot.vetro { background: var(--vetro); }
+        
+        .waste-name {
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .waste-emoji {
+            font-size: 1.4rem;
+        }
+        
+        .no-waste {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+        }
+        
+        .no-waste-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .nav-btn {
+            background: var(--card-bg);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            transition: transform 0.2s, background 0.2s;
+        }
+        
+        .nav-btn:active {
+            transform: scale(0.95);
+            background: #f0f0f0;
+        }
+        
+        .current-month {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .calendar-grid {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        
+        .weekday {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 8px 0;
+        }
+        
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+            padding: 4px;
+            min-height: 50px;
+        }
+        
+        .day:hover {
+            background: #f5f5f5;
+        }
+        
+        .day.empty {
+            cursor: default;
+        }
+        
+        .day.empty:hover {
+            background: transparent;
+        }
+        
+        .day.today {
+            background: var(--text);
+            color: white;
+        }
+        
+        .day.today:hover {
+            background: #333;
+        }
+        
+        .day.selected {
+            background: #e8e8e8;
+        }
+        
+        .day-number {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .day-dots {
+            display: flex;
+            gap: 2px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 100%;
+        }
+        
+        .mini-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        
+        .mini-dot.umido { background: var(--umido); }
+        .mini-dot.secco { background: var(--secco); }
+        .mini-dot.carta { background: var(--carta); }
+        .mini-dot.plastica { background: var(--plastica); }
+        .mini-dot.vetro { background: var(--vetro); }
+        
+        .day.today .mini-dot.umido { background: #d4a574; }
+        .day.today .mini-dot.secco { background: #999; }
+        .day.today .mini-dot.carta { background: #93c5fd; }
+        .day.today .mini-dot.plastica { background: #fde047; }
+        .day.today .mini-dot.vetro { background: #86efac; }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 16px;
+            background: var(--card-bg);
+            border-radius: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .upcoming-section {
+            margin-top: 24px;
+        }
+        
+        .upcoming-list {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .upcoming-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            gap: 14px;
+        }
+        
+        .upcoming-item:last-child {
+            border-bottom: none;
+        }
+        
+        .upcoming-date {
+            text-align: center;
+            min-width: 50px;
+        }
+        
+        .upcoming-day {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .upcoming-weekday {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        
+        .upcoming-wastes {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .upcoming-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .upcoming-badge.umido { background: rgba(139,90,43,0.15); color: var(--umido); }
+        .upcoming-badge.secco { background: rgba(74,74,74,0.15); color: var(--secco); }
+        .upcoming-badge.carta { background: rgba(37,99,235,0.15); color: var(--carta); }
+        .upcoming-badge.plastica { background: rgba(234,179,8,0.2); color: #a16207; }
+        .upcoming-badge.vetro { background: rgba(22,163,74,0.15); color: var(--vetro); }
+        
+        .detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 100;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .detail-modal.active {
+            display: flex;
+        }
+        
+        .detail-content {
+            background: var(--card-bg);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 70vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .detail-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .detail-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            background: #f0f0f0;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .detail-body {
+            padding: 20px;
+        }
+        
+        .tomorrow-label {
+            background: #dcfce7;
+            color: #166534;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .day-number {
+                font-size: 0.85rem;
+            }
+            
+            .mini-dot {
+                width: 5px;
+                height: 5px;
+            }
+        }
+        
+        /* iPad specific */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 700px;
+            }
+            
+            .today-section {
+                padding: 30px;
+            }
+            
+            .waste-item {
+                padding: 18px 20px;
+            }
+            
+            .calendar-grid {
+                padding: 24px;
+            }
+            
+            .day {
+                border-radius: 14px;
+                min-height: 60px;
+            }
+            
+            .day-number {
+                font-size: 1.1rem;
+            }
+            
+            .mini-dot {
+                width: 7px;
+                height: 7px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="logo-etra.png" class="logo" alt="ETRA">
+            <h1>Calendario Rifiuti</h1>
+            <p class="subtitle">Comune di Marostica • ZONA A</p>
+        </header>
+        
+        <div class="today-section">
+            <div class="today-header">
+                <span class="today-date" id="todayDate"></span>
+                <span class="today-label">Oggi</span>
+            </div>
+            <div id="todayWaste" class="waste-items"></div>
+        </div>
+        
+        <div class="upcoming-section">
+            <div class="section-title">Prossime raccolte</div>
+            <div class="upcoming-list" id="upcomingList"></div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <div class="section-title">Calendario</div>
+            <div class="calendar-nav">
+                <button class="nav-btn" id="prevMonth">‹</button>
+                <span class="current-month" id="currentMonth"></span>
+                <button class="nav-btn" id="nextMonth">›</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="weekdays">
+                    <span class="weekday">Lun</span>
+                    <span class="weekday">Mar</span>
+                    <span class="weekday">Mer</span>
+                    <span class="weekday">Gio</span>
+                    <span class="weekday">Ven</span>
+                    <span class="weekday">Sab</span>
+                    <span class="weekday">Dom</span>
+                </div>
+                <div class="days" id="calendarDays"></div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="waste-dot umido"></div> Umido</div>
+            <div class="legend-item"><div class="waste-dot secco"></div> Secco</div>
+            <div class="legend-item"><div class="waste-dot carta"></div> Carta</div>
+            <div class="legend-item"><div class="waste-dot plastica"></div> Plastica</div>
+            <div class="legend-item"><div class="waste-dot vetro"></div> Vetro</div>
+        </div>
+    </div>
+    
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-content">
+            <div class="detail-header">
+                <span class="detail-title" id="detailTitle"></span>
+                <button class="close-btn" id="closeModal">×</button>
+            </div>
+            <div class="detail-body" id="detailBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Database rifiuti ZONA A 2026-2027
+        const wasteData = {
+            // Gennaio 2026
+            '2026-01-05': ['umido'],
+            '2026-01-06': ['secco'],
+            '2026-01-07': ['carta'],
+            '2026-01-08': ['plastica', 'umido'],
+            '2026-01-12': ['umido'],
+            '2026-01-15': ['umido'],
+            '2026-01-19': ['umido'],
+            '2026-01-20': ['secco'],
+            '2026-01-21': ['carta'],
+            '2026-01-22': ['plastica', 'umido'],
+            '2026-01-23': ['vetro'],
+            '2026-01-26': ['umido'],
+            '2026-01-29': ['umido'],
+            
+            // Febbraio 2026
+            '2026-02-02': ['umido'],
+            '2026-02-03': ['secco'],
+            '2026-02-04': ['carta'],
+            '2026-02-05': ['umido', 'plastica'],
+            '2026-02-09': ['umido'],
+            '2026-02-12': ['umido'],
+            '2026-02-16': ['umido'],
+            '2026-02-17': ['secco'],
+            '2026-02-18': ['carta'],
+            '2026-02-19': ['plastica', 'umido'],
+            '2026-02-20': ['vetro'],
+            '2026-02-23': ['umido'],
+            '2026-02-26': ['umido'],
+            
+            // Marzo 2026
+            '2026-03-02': ['umido'],
+            '2026-03-03': ['secco'],
+            '2026-03-04': ['carta'],
+            '2026-03-05': ['plastica', 'umido'],
+            '2026-03-09': ['umido'],
+            '2026-03-12': ['umido'],
+            '2026-03-16': ['umido'],
+            '2026-03-17': ['secco'],
+            '2026-03-18': ['carta'],
+            '2026-03-19': ['plastica', 'umido'],
+            '2026-03-20': ['vetro'],
+            '2026-03-23': ['umido'],
+            '2026-03-26': ['umido'],
+            '2026-03-30': ['umido'],
+            '2026-03-31': ['secco'],
+            
+            // Aprile 2026
+            '2026-04-01': ['carta'],
+            '2026-04-02': ['plastica', 'umido'],
+            '2026-04-06': ['umido'],
+            '2026-04-09': ['umido'],
+            '2026-04-13': ['umido'],
+            '2026-04-14': ['secco'],
+            '2026-04-15': ['carta'],
+            '2026-04-16': ['umido', 'plastica'],
+            '2026-04-17': ['vetro'],
+            '2026-04-20': ['umido'],
+            '2026-04-23': ['umido'],
+            '2026-04-27': ['umido'],
+            '2026-04-28': ['secco'],
+            '2026-04-29': ['carta'],
+            '2026-04-30': ['umido', 'plastica'],
+            
+            // Maggio 2026
+            '2026-05-04': ['umido'],
+            '2026-05-07': ['umido'],
+            '2026-05-11': ['umido'],
+            '2026-05-12': ['secco'],
+            '2026-05-13': ['carta'],
+            '2026-05-14': ['umido', 'plastica'],
+            '2026-05-15': ['vetro'],
+            '2026-05-18': ['umido'],
+            '2026-05-21': ['umido'],
+            '2026-05-25': ['umido'],
+            '2026-05-26': ['secco'],
+            '2026-05-27': ['carta'],
+            '2026-05-28': ['umido', 'plastica'],
+            
+            // Giugno 2026
+            '2026-06-01': ['umido'],
+            '2026-06-04': ['umido'],
+            '2026-06-08': ['umido'],
+            '2026-06-09': ['secco'],
+            '2026-06-10': ['carta'],
+            '2026-06-11': ['plastica', 'umido'],
+            '2026-06-12': ['vetro'],
+            '2026-06-15': ['umido'],
+            '2026-06-18': ['umido'],
+            '2026-06-22': ['umido'],
+            '2026-06-23': ['secco'],
+            '2026-06-24': ['carta'],
+            '2026-06-25': ['umido', 'plastica'],
+            '2026-06-29': ['umido'],
+            
+            // Luglio 2026
+            '2026-07-02': ['umido'],
+            '2026-07-06': ['umido'],
+            '2026-07-07': ['secco'],
+            '2026-07-08': ['carta'],
+            '2026-07-09': ['umido', 'plastica'],
+            '2026-07-10': ['vetro'],
+            '2026-07-13': ['umido'],
+            '2026-07-16': ['umido'],
+            '2026-07-20': ['umido'],
+            '2026-07-21': ['secco'],
+            '2026-07-22': ['carta'],
+            '2026-07-23': ['plastica', 'umido'],
+            '2026-07-27': ['umido'],
+            '2026-07-30': ['umido'],
+            
+            // Agosto 2026
+            '2026-08-03': ['umido'],
+            '2026-08-04': ['secco'],
+            '2026-08-05': ['carta'],
+            '2026-08-06': ['plastica', 'umido'],
+            '2026-08-07': ['vetro'],
+            '2026-08-10': ['umido'],
+            '2026-08-13': ['umido'],
+            '2026-08-17': ['umido'],
+            '2026-08-18': ['secco'],
+            '2026-08-19': ['carta'],
+            '2026-08-20': ['umido', 'plastica'],
+            '2026-08-24': ['umido'],
+            '2026-08-27': ['umido'],
+            '2026-08-31': ['umido'],
+            
+            // Settembre 2026
+            '2026-09-01': ['secco'],
+            '2026-09-02': ['carta'],
+            '2026-09-03': ['umido', 'plastica'],
+            '2026-09-04': ['vetro'],
+            '2026-09-07': ['umido'],
+            '2026-09-10': ['umido'],
+            '2026-09-14': ['umido'],
+            '2026-09-15': ['secco'],
+            '2026-09-16': ['carta'],
+            '2026-09-17': ['plastica', 'umido'],
+            '2026-09-21': ['umido'],
+            '2026-09-24': ['umido'],
+            '2026-09-28': ['umido'],
+            '2026-09-29': ['secco'],
+            '2026-09-30': ['carta'],
+            
+            // Ottobre 2026
+            '2026-10-01': ['plastica', 'umido'],
+            '2026-10-02': ['vetro'],
+            '2026-10-05': ['umido'],
+            '2026-10-08': ['umido'],
+            '2026-10-12': ['umido'],
+            '2026-10-13': ['secco'],
+            '2026-10-14': ['carta'],
+            '2026-10-15': ['plastica', 'umido'],
+            '2026-10-19': ['umido'],
+            '2026-10-22': ['umido'],
+            '2026-10-26': ['umido'],
+            '2026-10-27': ['secco'],
+            '2026-10-28': ['carta'],
+            '2026-10-29': ['plastica', 'umido'],
+            '2026-10-30': ['vetro'],
+            
+            // Novembre 2026
+            '2026-11-02': ['umido'],
+            '2026-11-05': ['umido'],
+            '2026-11-09': ['umido'],
+            '2026-11-10': ['secco'],
+            '2026-11-11': ['carta'],
+            '2026-11-12': ['umido', 'plastica'],
+            '2026-11-16': ['umido'],
+            '2026-11-19': ['umido'],
+            '2026-11-23': ['umido'],
+            '2026-11-24': ['secco'],
+            '2026-11-25': ['carta'],
+            '2026-11-26': ['umido', 'plastica'],
+            '2026-11-27': ['vetro'],
+            '2026-11-30': ['umido'],
+            
+            // Dicembre 2026
+            '2026-12-03': ['umido'],
+            '2026-12-07': ['umido'],
+            '2026-12-08': ['secco'],
+            '2026-12-09': ['carta'],
+            '2026-12-10': ['umido', 'plastica'],
+            '2026-12-14': ['umido'],
+            '2026-12-17': ['umido'],
+            '2026-12-21': ['umido'],
+            '2026-12-22': ['secco'],
+            '2026-12-23': ['carta'],
+            '2026-12-24': ['umido', 'plastica'],
+            '2026-12-26': ['vetro'],
+            '2026-12-28': ['umido'],
+            '2026-12-31': ['umido'],
+            
+            // Gennaio 2027
+            '2027-01-04': ['umido'],
+            '2027-01-05': ['secco'],
+            '2027-01-06': ['carta'],
+            '2027-01-07': ['plastica', 'umido'],
+            '2027-01-11': ['umido'],
+            '2027-01-14': ['umido'],
+            '2027-01-18': ['umido'],
+            '2027-01-19': ['secco'],
+            '2027-01-20': ['carta'],
+            '2027-01-21': ['plastica', 'umido'],
+            '2027-01-22': ['vetro'],
+            '2027-01-25': ['umido'],
+            '2027-01-28': ['umido'],
+        };
+        
+        const wasteNames = {
+            umido: 'Umido Organico',
+            secco: 'Secco Residuo',
+            carta: 'Carta e Cartone',
+            plastica: 'Plastica e Metalli',
+            vetro: 'Vetro'
+        };
+        
+        const wasteEmoji = {
+            umido: '🟤',
+            secco: '⚫',
+            carta: '🔵',
+            plastica: '🟡',
+            vetro: '🟢'
+        };
+        
+        const monthNames = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 
+                          'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+        
+        const dayNames = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+        const dayNamesFull = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+        
+        let currentDate = new Date();
+        let viewMonth = currentDate.getMonth();
+        let viewYear = currentDate.getFullYear();
+        
+        function formatDateKey(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return y + '-' + m + '-' + d;
+        }
+        
+        function formatDisplayDate(date) {
+            return dayNamesFull[date.getDay()] + ' ' + date.getDate() + ' ' + monthNames[date.getMonth()];
+        }
+        
+        function getWasteForDate(date) {
+            const key = formatDateKey(date);
+            return wasteData[key] || [];
+        }
+        
+        function renderTodaySection() {
+            const today = new Date();
+            document.getElementById('todayDate').textContent = formatDisplayDate(today);
+            
+            const wastes = getWasteForDate(today);
+            const container = document.getElementById('todayWaste');
+            
+            if (wastes.length === 0) {
+                container.innerHTML = '<div class="no-waste"><div class="no-waste-icon">😊</div><div>Nessuna raccolta oggi</div></div>';
+            } else {
+                let html = '';
+                for (let i = 0; i < wastes.length; i++) {
+                    const w = wastes[i];
+                    html += '<div class="waste-item"><div class="waste-dot ' + w + '"></div><span class="waste-name">' + wasteNames[w] + '</span><span class="waste-emoji">' + wasteEmoji[w] + '</span></div>';
+                }
+                container.innerHTML = html;
+            }
+        }
+        
+        function renderUpcoming() {
+            const container = document.getElementById('upcomingList');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            const upcoming = [];
+            const checkDate = new Date(today);
+            checkDate.setDate(checkDate.getDate() + 1);
+            
+            let iterations = 0;
+            while (upcoming.length < 5 && iterations < 100) {
+                const wastes = getWasteForDate(checkDate);
+                if (wastes.length > 0) {
+                    upcoming.push({
+                        date: new Date(checkDate),
+                        wastes: wastes
+                    });
+                }
+                checkDate.setDate(checkDate.getDate() + 1);
+                iterations++;
+            }
+            
+            if (upcoming.length === 0) {
+                container.innerHTML = '<div class="upcoming-item"><div style="padding: 20px; text-align: center; color: #666; width: 100%;">Nessuna raccolta programmata</div></div>';
+                return;
+            }
+            
+            let html = '';
+            for (let i = 0; i < upcoming.length; i++) {
+                const item = upcoming[i];
+                const isTomorrow = item.date.getTime() === tomorrow.getTime();
+                
+                html += '<div class="upcoming-item">';
+                html += '<div class="upcoming-date">';
+                html += '<div class="upcoming-day">' + item.date.getDate() + '</div>';
+                html += '<div class="upcoming-weekday">' + dayNames[item.date.getDay()] + '</div>';
+                html += '</div>';
+                html += '<div class="upcoming-wastes">';
+                
+                for (let j = 0; j < item.wastes.length; j++) {
+                    const w = item.wastes[j];
+                    html += '<span class="upcoming-badge ' + w + '">' + wasteEmoji[w] + ' ' + wasteNames[w].split(' ')[0] + '</span>';
+                }
+                
+                if (isTomorrow) {
+                    html += '<span class="tomorrow-label">Domani</span>';
+                }
+                
+                html += '</div></div>';
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function renderCalendar() {
+            document.getElementById('currentMonth').textContent = monthNames[viewMonth] + ' ' + viewYear;
+            
+            const container = document.getElementById('calendarDays');
+            const firstDay = new Date(viewYear, viewMonth, 1);
+            const lastDay = new Date(viewYear, viewMonth + 1, 0);
+            
+            let startDay = firstDay.getDay() - 1;
+            if (startDay < 0) startDay = 6;
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            let html = '';
+            
+            for (let i = 0; i < startDay; i++) {
+                html += '<div class="day empty"></div>';
+            }
+            
+            for (let d = 1; d <= lastDay.getDate(); d++) {
+                const date = new Date(viewYear, viewMonth, d);
+                const wastes = getWasteForDate(date);
+                const isToday = date.getTime() === today.getTime();
+                const dateKey = formatDateKey(date);
+                
+                html += '<div class="day' + (isToday ? ' today' : '') + '" data-date="' + dateKey + '">';
+                html += '<span class="day-number">' + d + '</span>';
+                html += '<div class="day-dots">';
+                
+                for (let j = 0; j < wastes.length; j++) {
+                    html += '<div class="mini-dot ' + wastes[j] + '"></div>';
+                }
+                
+                html += '</div></div>';
+            }
+            
+            container.innerHTML = html;
+            
+            const days = container.querySelectorAll('.day:not(.empty)');
+            for (let i = 0; i < days.length; i++) {
+                days[i].addEventListener('click', function() {
+                    showDayDetail(this.getAttribute('data-date'));
+                });
+            }
+        }
+        
+        function showDayDetail(dateKey) {
+            const wastes = wasteData[dateKey] || [];
+            const parts = dateKey.split('-');
+            const date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            
+            document.getElementById('detailTitle').textContent = formatDisplayDate(date);
+            
+            const body = document.getElementById('detailBody');
+            if (wastes.length === 0) {
+                body.innerHTML = '<div class="no-waste"><div class="no-waste-icon">😊</div><div>Nessuna raccolta questo giorno</div></div>';
+            } else {
+                let html = '<div class="waste-items">';
+                for (let i = 0; i < wastes.length; i++) {
+                    const w = wastes[i];
+                    html += '<div class="waste-item"><div class="waste-dot ' + w + '"></div><span class="waste-name">' + wasteNames[w] + '</span><span class="waste-emoji">' + wasteEmoji[w] + '</span></div>';
+                }
+                html += '</div>';
+                body.innerHTML = html;
+            }
+            
+            document.getElementById('detailModal').classList.add('active');
+        }
+        
+        document.getElementById('prevMonth').addEventListener('click', function() {
+            viewMonth--;
+            if (viewMonth < 0) {
+                viewMonth = 11;
+                viewYear--;
+            }
+            renderCalendar();
+        });
+        
+        document.getElementById('nextMonth').addEventListener('click', function() {
+            viewMonth++;
+            if (viewMonth > 11) {
+                viewMonth = 0;
+                viewYear++;
+            }
+            renderCalendar();
+        });
+        
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('detailModal').classList.remove('active');
+        });
+        
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+        
+        // Initial render
+        renderTodaySection();
+        renderUpcoming();
+        renderCalendar();
+    </script>
+</body>
+</html>
