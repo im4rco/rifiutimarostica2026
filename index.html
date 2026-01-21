@@ -6,6 +6,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Rifiuti">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Rifiuti Marostica - ZONA A</title>
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♻️</text></svg>">
     <style>
@@ -33,8 +36,30 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            min-height: -webkit-fill-available;
             padding: 20px;
-            padding-top: env(safe-area-inset-top, 20px);
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
+            padding-left: max(16px, env(safe-area-inset-left));
+            padding-right: max(16px, env(safe-area-inset-right));
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        /* Disabilita il tap highlight su iOS */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Supporto per standalone mode su iPhone */
+        @media (display-mode: standalone) {
+            body {
+                padding-top: max(44px, env(safe-area-inset-top));
+            }
         }
         
         .container {
@@ -65,93 +90,115 @@
         
         .today-section {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 20px;
+            padding: 0;
             margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
         }
-        
+
         .today-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            color: white;
         }
-        
+
         .today-date {
-            font-size: 1.1rem;
-            font-weight: 500;
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
         }
-        
+
         .today-label {
-            background: #f0f0f0;
-            padding: 4px 12px;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
+
+        .today-content {
+            padding: 20px 24px;
+        }
+
         .waste-items {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-        
+
         .waste-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
-            background: #f8f8f8;
-            border-radius: 12px;
-            transition: transform 0.2s;
+            gap: 16px;
+            padding: 16px 18px;
+            background: #f5f5f7;
+            border-radius: 14px;
+            transition: all 0.2s ease;
         }
-        
+
         .waste-item:active {
             transform: scale(0.98);
+            background: #ebebed;
         }
-        
+
         .waste-dot {
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
             flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
         }
-        
+
         .waste-dot.umido { background: var(--umido); }
         .waste-dot.secco { background: var(--secco); }
         .waste-dot.carta { background: var(--carta); }
         .waste-dot.plastica { background: var(--plastica); }
         .waste-dot.vetro { background: var(--vetro); }
-        
+
         .waste-name {
             font-weight: 500;
+            font-size: 1.05rem;
             flex: 1;
+            color: var(--text);
         }
-        
+
         .waste-emoji {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
         }
-        
+
         .no-waste {
             text-align: center;
-            padding: 30px;
+            padding: 40px 20px;
             color: var(--text-secondary);
         }
-        
+
         .no-waste-icon {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+
+        .no-waste-text {
+            font-size: 1.1rem;
+            font-weight: 500;
         }
         
         .section-title {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: #8e8e93;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            padding-left: 4px;
+            letter-spacing: 0.8px;
+            margin-bottom: 14px;
+            padding-left: 16px;
         }
         
         .calendar-nav {
@@ -159,130 +206,156 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
+            padding: 0 8px;
         }
-        
+
         .nav-btn {
-            background: var(--card-bg);
+            background: transparent;
             border: none;
             width: 44px;
             height: 44px;
-            border-radius: 12px;
-            font-size: 1.2rem;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: #007aff;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            transition: transform 0.2s, background 0.2s;
+            transition: all 0.2s ease;
         }
-        
+
+        .nav-btn:hover {
+            background: rgba(0, 122, 255, 0.1);
+        }
+
         .nav-btn:active {
-            transform: scale(0.95);
-            background: #f0f0f0;
+            transform: scale(0.9);
+            background: rgba(0, 122, 255, 0.2);
         }
-        
+
         .current-month {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
         }
         
         .calendar-grid {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
         }
-        
+
         .weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
         }
-        
+
         .weekday {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: var(--text-secondary);
+            color: #8e8e93;
             padding: 8px 0;
+            text-transform: uppercase;
         }
-        
+
+        .weekday:nth-child(6),
+        .weekday:nth-child(7) {
+            color: #ff3b30;
+        }
+
         .days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 2px;
         }
-        
+
         .day {
             aspect-ratio: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s ease;
             position: relative;
             padding: 4px;
-            min-height: 50px;
+            min-height: 44px;
         }
-        
+
         .day:hover {
-            background: #f5f5f5;
+            background: rgba(0, 122, 255, 0.1);
         }
-        
+
+        .day:active {
+            transform: scale(0.95);
+        }
+
         .day.empty {
             cursor: default;
         }
-        
+
         .day.empty:hover {
             background: transparent;
         }
-        
+
         .day.today {
-            background: var(--text);
+            background: #ff3b30;
             color: white;
+            box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3);
         }
-        
+
         .day.today:hover {
-            background: #333;
+            background: #e0342b;
         }
-        
+
         .day.selected {
-            background: #e8e8e8;
+            background: rgba(0, 122, 255, 0.15);
         }
-        
+
         .day-number {
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-bottom: 2px;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1;
         }
-        
+
+        .day.today .day-number {
+            font-weight: 600;
+        }
+
         .day-dots {
             display: flex;
-            gap: 2px;
+            gap: 3px;
             flex-wrap: wrap;
             justify-content: center;
             max-width: 100%;
+            margin-top: 3px;
+            position: absolute;
+            bottom: 4px;
         }
-        
+
         .mini-dot {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
         }
-        
+
         .mini-dot.umido { background: var(--umido); }
         .mini-dot.secco { background: var(--secco); }
         .mini-dot.carta { background: var(--carta); }
         .mini-dot.plastica { background: var(--plastica); }
         .mini-dot.vetro { background: var(--vetro); }
-        
-        .day.today .mini-dot.umido { background: #d4a574; }
-        .day.today .mini-dot.secco { background: #999; }
-        .day.today .mini-dot.carta { background: #93c5fd; }
-        .day.today .mini-dot.plastica { background: #fde047; }
-        .day.today .mini-dot.vetro { background: #86efac; }
+
+        .day.today .mini-dot.umido { background: #ffd4c4; }
+        .day.today .mini-dot.secco { background: #ccc; }
+        .day.today .mini-dot.carta { background: #a5d4ff; }
+        .day.today .mini-dot.plastica { background: #fff3a0; }
+        .day.today .mini-dot.vetro { background: #a8f0c0; }
         
         .legend {
             display: flex;
@@ -304,66 +377,87 @@
         }
         
         .upcoming-section {
-            margin-top: 24px;
+            margin-top: 28px;
         }
-        
+
         .upcoming-list {
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
-        
+
         .upcoming-item {
             display: flex;
             align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid var(--border);
-            gap: 14px;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            gap: 18px;
+            transition: background 0.2s ease;
         }
-        
+
+        .upcoming-item:active {
+            background: #f5f5f7;
+        }
+
         .upcoming-item:last-child {
             border-bottom: none;
         }
-        
+
         .upcoming-date {
             text-align: center;
-            min-width: 50px;
+            min-width: 55px;
+            padding: 8px;
+            background: #f5f5f7;
+            border-radius: 12px;
         }
-        
+
         .upcoming-day {
-            font-size: 1.4rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.1;
         }
-        
+
         .upcoming-weekday {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #8e8e93;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
-        
+
         .upcoming-wastes {
             flex: 1;
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
+            align-items: center;
         }
-        
+
         .upcoming-badge {
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
-        
-        .upcoming-badge.umido { background: rgba(139,90,43,0.15); color: var(--umido); }
-        .upcoming-badge.secco { background: rgba(74,74,74,0.15); color: var(--secco); }
-        .upcoming-badge.carta { background: rgba(37,99,235,0.15); color: var(--carta); }
-        .upcoming-badge.plastica { background: rgba(234,179,8,0.2); color: #a16207; }
-        .upcoming-badge.vetro { background: rgba(22,163,74,0.15); color: var(--vetro); }
+
+        .upcoming-badge.umido { background: rgba(139,90,43,0.12); color: var(--umido); }
+        .upcoming-badge.secco { background: rgba(74,74,74,0.12); color: var(--secco); }
+        .upcoming-badge.carta { background: rgba(37,99,235,0.12); color: var(--carta); }
+        .upcoming-badge.plastica { background: rgba(234,179,8,0.18); color: #a16207; }
+        .upcoming-badge.vetro { background: rgba(22,163,74,0.12); color: var(--vetro); }
+
+        .upcoming-item.is-tomorrow .upcoming-date {
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .upcoming-item.is-tomorrow .upcoming-day {
+            color: #ff3b30;
+        }
         
         .detail-modal {
             display: none;
@@ -435,31 +529,449 @@
         }
         
         .tomorrow-label {
-            background: #dcfce7;
-            color: #166534;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-left: 8px;
+            background: #ff3b30;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            box-shadow: 0 4px 14px rgba(255, 59, 48, 0.45);
+            animation: pulse-tomorrow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-tomorrow {
+            0%, 100% { transform: scale(1); box-shadow: 0 4px 14px rgba(255, 59, 48, 0.45); }
+            50% { transform: scale(1.08); box-shadow: 0 6px 22px rgba(255, 59, 48, 0.6); }
+        }
+
+        .upcoming-item.is-tomorrow {
+            background: linear-gradient(135deg, #fff5f5, #ffe5e5);
+            border-left: 4px solid #ff3b30;
         }
         
-        @media (max-width: 600px) {
+        /* iPhone e schermi piccoli */
+        @media (max-width: 430px) {
             body {
-                padding: 16px;
+                padding: 12px;
+                padding-top: max(12px, env(safe-area-inset-top));
+                padding-bottom: max(12px, env(safe-area-inset-bottom));
             }
-            
+
+            header {
+                margin-bottom: 20px;
+            }
+
+            .logo {
+                height: 40px;
+                margin-bottom: 8px;
+            }
+
             h1 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
             }
-            
+
+            .subtitle {
+                font-size: 0.85rem;
+            }
+
+            .today-section {
+                border-radius: 16px;
+                margin-bottom: 20px;
+            }
+
+            .today-header {
+                padding: 14px 16px;
+            }
+
+            .today-date {
+                font-size: 1rem;
+            }
+
+            .today-label {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+            }
+
+            .today-content {
+                padding: 14px 16px;
+            }
+
+            .waste-items {
+                gap: 10px;
+            }
+
+            .waste-item {
+                padding: 12px 14px;
+                gap: 12px;
+                border-radius: 12px;
+            }
+
+            .waste-dot {
+                width: 14px;
+                height: 14px;
+            }
+
+            .waste-name {
+                font-size: 0.95rem;
+            }
+
+            .waste-emoji {
+                font-size: 1.3rem;
+            }
+
+            .section-title {
+                font-size: 0.75rem;
+                margin-bottom: 10px;
+                padding-left: 12px;
+            }
+
+            .upcoming-section {
+                margin-top: 20px;
+            }
+
+            .upcoming-list {
+                border-radius: 16px;
+            }
+
+            .upcoming-item {
+                padding: 14px 14px;
+                gap: 12px;
+            }
+
+            .upcoming-date {
+                min-width: 44px;
+                padding: 6px;
+                border-radius: 10px;
+            }
+
+            .upcoming-day {
+                font-size: 1.2rem;
+            }
+
+            .upcoming-weekday {
+                font-size: 0.65rem;
+            }
+
+            .upcoming-wastes {
+                gap: 6px;
+            }
+
+            .upcoming-badge {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+                border-radius: 10px;
+            }
+
+            .tomorrow-label {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+                letter-spacing: 0.8px;
+            }
+
+            .calendar-nav {
+                margin-bottom: 12px;
+            }
+
+            .nav-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 1.3rem;
+            }
+
+            .current-month {
+                font-size: 1.1rem;
+            }
+
+            .calendar-grid {
+                border-radius: 16px;
+                padding: 14px;
+            }
+
+            .weekdays {
+                margin-bottom: 8px;
+                padding-bottom: 8px;
+            }
+
+            .weekday {
+                font-size: 0.7rem;
+            }
+
+            .day {
+                min-height: 38px;
+            }
+
             .day-number {
                 font-size: 0.85rem;
             }
-            
+
+            .day-dots {
+                bottom: 2px;
+            }
+
+            .mini-dot {
+                width: 4px;
+                height: 4px;
+            }
+
+            .legend {
+                margin-top: 16px;
+                padding: 12px;
+                border-radius: 12px;
+                gap: 8px;
+            }
+
+            .legend-item {
+                font-size: 0.7rem;
+                gap: 4px;
+            }
+
+            .legend-item .waste-dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .detail-modal {
+                padding: 12px;
+            }
+
+            .detail-content {
+                border-radius: 16px;
+                max-height: 75vh;
+            }
+
+            .detail-header {
+                padding: 16px;
+            }
+
+            .detail-title {
+                font-size: 1rem;
+            }
+
+            .detail-body {
+                padding: 16px;
+            }
+
+            .no-waste {
+                padding: 30px 16px;
+            }
+
+            .no-waste-icon {
+                font-size: 2.5rem;
+            }
+
+            .no-waste-text {
+                font-size: 1rem;
+            }
+        }
+
+        /* iPhone SE e schermi molto piccoli */
+        @media (max-width: 375px) {
+            body {
+                padding: 10px;
+                padding-top: max(10px, env(safe-area-inset-top));
+            }
+
+            .logo {
+                height: 35px;
+            }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .subtitle {
+                font-size: 0.8rem;
+            }
+
+            .today-header {
+                padding: 12px 14px;
+            }
+
+            .today-date {
+                font-size: 0.95rem;
+            }
+
+            .today-content {
+                padding: 12px 14px;
+            }
+
+            .waste-item {
+                padding: 10px 12px;
+                gap: 10px;
+            }
+
+            .waste-name {
+                font-size: 0.9rem;
+            }
+
+            .upcoming-item {
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .upcoming-date {
+                min-width: 40px;
+                padding: 5px;
+            }
+
+            .upcoming-day {
+                font-size: 1.1rem;
+            }
+
+            .upcoming-badge {
+                padding: 5px 8px;
+                font-size: 0.75rem;
+            }
+
+            .tomorrow-label {
+                padding: 5px 10px;
+                font-size: 0.7rem;
+            }
+
+            .calendar-grid {
+                padding: 12px;
+            }
+
+            .day {
+                min-height: 34px;
+            }
+
+            .day-number {
+                font-size: 0.8rem;
+            }
+
+            .current-month {
+                font-size: 1rem;
+            }
+        }
+
+        /* Tablet piccoli e iPhone landscape */
+        @media (min-width: 431px) and (max-width: 767px) {
+            body {
+                padding: 16px;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .today-header {
+                padding: 18px 22px;
+            }
+
+            .today-date {
+                font-size: 1.15rem;
+            }
+
+            .today-content {
+                padding: 18px 22px;
+            }
+
+            .waste-item {
+                padding: 14px 16px;
+            }
+
+            .upcoming-item {
+                padding: 16px 18px;
+                gap: 14px;
+            }
+
+            .upcoming-day {
+                font-size: 1.4rem;
+            }
+
+            .day {
+                min-height: 44px;
+            }
+
+            .day-number {
+                font-size: 0.95rem;
+            }
+
             .mini-dot {
                 width: 5px;
                 height: 5px;
+            }
+        }
+
+        /* iPhone landscape mode */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 10px 20px;
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+            }
+
+            header {
+                margin-bottom: 15px;
+            }
+
+            .logo {
+                height: 30px;
+            }
+
+            h1 {
+                font-size: 1.1rem;
+                margin-bottom: 2px;
+            }
+
+            .subtitle {
+                font-size: 0.75rem;
+            }
+
+            .today-section {
+                margin-bottom: 15px;
+            }
+
+            .today-header {
+                padding: 10px 16px;
+            }
+
+            .today-date {
+                font-size: 0.95rem;
+            }
+
+            .today-content {
+                padding: 12px 16px;
+            }
+
+            .waste-items {
+                gap: 8px;
+            }
+
+            .waste-item {
+                padding: 10px 12px;
+            }
+
+            .section-title {
+                margin-bottom: 8px;
+            }
+
+            .upcoming-section {
+                margin-top: 15px;
+            }
+
+            .upcoming-item {
+                padding: 10px 12px;
+            }
+
+            .upcoming-day {
+                font-size: 1.1rem;
+            }
+
+            .calendar-grid {
+                padding: 12px;
+            }
+
+            .day {
+                min-height: 32px;
+            }
+
+            .legend {
+                margin-top: 12px;
+                padding: 10px;
             }
         }
         
@@ -468,31 +980,61 @@
             .container {
                 max-width: 700px;
             }
-            
-            .today-section {
-                padding: 30px;
+
+            .today-header {
+                padding: 24px 28px;
             }
-            
+
+            .today-date {
+                font-size: 1.4rem;
+            }
+
+            .today-content {
+                padding: 24px 28px;
+            }
+
             .waste-item {
-                padding: 18px 20px;
+                padding: 18px 22px;
+                gap: 18px;
             }
-            
-            .calendar-grid {
-                padding: 24px;
-            }
-            
-            .day {
-                border-radius: 14px;
-                min-height: 60px;
-            }
-            
-            .day-number {
+
+            .waste-name {
                 font-size: 1.1rem;
             }
-            
+
+            .upcoming-item {
+                padding: 20px 24px;
+            }
+
+            .upcoming-day {
+                font-size: 1.7rem;
+            }
+
+            .calendar-grid {
+                padding: 28px;
+            }
+
+            .day {
+                border-radius: 50%;
+                min-height: 56px;
+            }
+
+            .day-number {
+                font-size: 1.15rem;
+            }
+
             .mini-dot {
-                width: 7px;
-                height: 7px;
+                width: 6px;
+                height: 6px;
+            }
+
+            .tomorrow-label {
+                padding: 10px 22px;
+                font-size: 0.95rem;
+            }
+
+            .weekday {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -510,7 +1052,9 @@
                 <span class="today-date" id="todayDate"></span>
                 <span class="today-label">Oggi</span>
             </div>
-            <div id="todayWaste" class="waste-items"></div>
+            <div class="today-content">
+                <div id="todayWaste" class="waste-items"></div>
+            </div>
         </div>
         
         <div class="upcoming-section">
@@ -820,7 +1364,7 @@
             const container = document.getElementById('todayWaste');
             
             if (wastes.length === 0) {
-                container.innerHTML = '<div class="no-waste"><div class="no-waste-icon">😊</div><div>Nessuna raccolta oggi</div></div>';
+                container.innerHTML = '<div class="no-waste"><div class="no-waste-icon">😊</div><div class="no-waste-text">Nessuna raccolta oggi</div></div>';
             } else {
                 let html = '';
                 for (let i = 0; i < wastes.length; i++) {
@@ -865,23 +1409,23 @@
             for (let i = 0; i < upcoming.length; i++) {
                 const item = upcoming[i];
                 const isTomorrow = item.date.getTime() === tomorrow.getTime();
-                
-                html += '<div class="upcoming-item">';
+
+                html += '<div class="upcoming-item' + (isTomorrow ? ' is-tomorrow' : '') + '">';
                 html += '<div class="upcoming-date">';
                 html += '<div class="upcoming-day">' + item.date.getDate() + '</div>';
                 html += '<div class="upcoming-weekday">' + dayNames[item.date.getDay()] + '</div>';
                 html += '</div>';
                 html += '<div class="upcoming-wastes">';
-                
+
                 for (let j = 0; j < item.wastes.length; j++) {
                     const w = item.wastes[j];
                     html += '<span class="upcoming-badge ' + w + '">' + wasteEmoji[w] + ' ' + wasteNames[w].split(' ')[0] + '</span>';
                 }
-                
+
                 if (isTomorrow) {
                     html += '<span class="tomorrow-label">Domani</span>';
                 }
-                
+
                 html += '</div></div>';
             }
             
@@ -985,10 +1529,52 @@
             }
         });
         
+        // Tiene traccia dell'ultima data renderizzata
+        let lastRenderedDate = formatDateKey(new Date());
+
+        function refreshIfNeeded() {
+            const now = new Date();
+            const todayKey = formatDateKey(now);
+
+            // Se la data è cambiata, aggiorna tutto
+            if (todayKey !== lastRenderedDate) {
+                lastRenderedDate = todayKey;
+                currentDate = now;
+                viewMonth = now.getMonth();
+                viewYear = now.getFullYear();
+            }
+
+            // Ri-renderizza sempre per aggiornare la vista
+            renderTodaySection();
+            renderUpcoming();
+            renderCalendar();
+        }
+
+        // Aggiorna quando l'app torna visibile (riapertura da home screen)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') {
+                refreshIfNeeded();
+            }
+        });
+
+        // Aggiorna anche quando la finestra torna in focus (backup per iOS)
+        window.addEventListener('focus', function() {
+            refreshIfNeeded();
+        });
+
+        // Aggiorna anche al resume da pageshow (per iOS Safari)
+        window.addEventListener('pageshow', function(event) {
+            // event.persisted indica se la pagina viene dalla cache bfcache
+            if (event.persisted) {
+                refreshIfNeeded();
+            }
+        });
+
+        // Aggiornamento periodico ogni ora (3600000 ms)
+        setInterval(refreshIfNeeded, 3600000);
+
         // Initial render
-        renderTodaySection();
-        renderUpcoming();
-        renderCalendar();
+        refreshIfNeeded();
     </script>
 </body>
 </html>
